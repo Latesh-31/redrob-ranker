@@ -1,0 +1,51 @@
+venv/
+.venv/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+*.pyc
+*.pyo
+env/
+build/
+dist/
+
+# model weights (keep models local for offline use)
+models/*/model.safetensors
+models/*-fp16/
+
+# hnsw index and large artifacts
+models/embeddings/candidates_hnsw.bin
+models/embeddings/candidates_hnsw.bin.meta.json
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+*.egg-info/
+dist/
+build/
+
+# Data & models (large files)
+data/candidates.jsonl
+data/candidates.jsonl.gz
+models/embeddings/
+models/bge-small-en-v1.5/
+
+# Output
+output/*.csv
+output/*.json
+output/logs.txt
+
+# IDE
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Environment
+.env
+.env.local
