@@ -31,6 +31,20 @@ def extract_text_from_docx(file_bytes: bytes) -> str:
     except Exception as e:
         raise ValueError(f"Failed to parse DOCX file: {e}")
 
+def extract_text_from_pdf(file_bytes: bytes) -> str:
+    """Extract text content from an uploaded .pdf file."""
+    try:
+        from pypdf import PdfReader
+        reader = PdfReader(io.BytesIO(file_bytes))
+        paragraphs = []
+        for page in reader.pages:
+            extracted = page.extract_text()
+            if extracted:
+                paragraphs.append(extracted)
+        return "\n".join(paragraphs)
+    except Exception as e:
+        raise ValueError(f"Failed to parse PDF file: {e}")
+
 # Page configuration
 st.set_page_config(
     page_title="Redrob Ranker Dashboard",
@@ -168,7 +182,7 @@ with tab_rank:
         jd_text = ""
         
         if jd_input_method == "Upload Job Description File":
-            uploaded_file = st.file_uploader("Upload Job Description (.md, .docx, .txt)", type=["md", "txt", "docx"])
+            uploaded_file = st.file_uploader("Upload Job Description (.md, .docx, .pdf, .txt)", type=["md", "txt", "docx", "pdf"])
         else:
             jd_text = st.text_area("Paste Job Description Markdown here:", height=250, placeholder="# Senior ML Engineer\n\n## Requirements\n- PyTorch\n- Python...")
             
@@ -202,6 +216,12 @@ with tab_rank:
                         jd_content = extract_text_from_docx(file_bytes)
                     except Exception as e:
                         st.error(f"Failed to read DOCX file: {e}")
+                        jd_content = None
+                elif file_name.endswith(".pdf"):
+                    try:
+                        jd_content = extract_text_from_pdf(file_bytes)
+                    except Exception as e:
+                        st.error(f"Failed to read PDF file: {e}")
                         jd_content = None
                 else:
                     jd_content = file_bytes.decode("utf-8", errors="ignore")
