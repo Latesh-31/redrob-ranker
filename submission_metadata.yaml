@@ -1,0 +1,78 @@
+# Redrob Hackathon — Submission Metadata
+
+team_name: "LumerLabs"
+
+primary_contact:
+  name: "Hemachandran S B"
+  email: "hemachandran074@gmail.com"
+  phone: "+91-9566687795"
+
+team_members:
+  - name: "Hemachandran S B"
+    email: "hemachandran074@gmail.com"
+    role: "Team Lead & AIML Engineer"
+  - name: "Latesh"
+    email: "latesh312006@gmail.com"
+    role: "Backend Engineer"
+
+github_repo: "https://github.com/Latesh-31/redrob-ranker"
+
+sandbox_link: "https://redrob-ranker-qtdehsqt6mah9wecm3rcza.streamlit.app/"
+
+reproduce_command: "python rank.py --jd data/job_description.md --output output/submission.xlsx"
+
+# ============================================================================
+# Compute environment
+# ============================================================================
+compute:
+  platform: "Local Windows PC"                  # Or: "AWS EC2 c5.4xlarge", "Local Linux box", etc.
+  cpu_cores: 16                                 # Number of CPU cores used
+  ram_gb: 16                                    # Available RAM in GB (adjust if 32GB)
+  python_version: "3.12.6"                      # python --version
+  os: "Windows 11"                              # Or "Ubuntu 22.04 LTS", etc.
+  uses_gpu_for_inference: false                 # Must be false — see compute constraints
+  has_network_during_ranking: false             # Must be false — no API calls during ranking
+  pre_computation_required: true                # true if you pre-compute embeddings or train models offline
+  pre_computation_time_minutes: 60              # Approximate, if applicable
+
+# ============================================================================
+# AI tools declaration
+# ============================================================================
+# Transparency only — declared use is NOT penalized. Be honest. Stage 5 interview
+# may verify these declarations against your code; declarations that contradict
+# your code or your interview are flagged.
+ai_tools_used:
+  - "Gemini"
+  - "Other"        # e.g. for architecture discussion, code review
+  # Other options: "ChatGPT", "Cursor", "Claude", "GitHub Copilot", "Codeium", "None"
+
+ai_usage_summary: |
+  Used Gemini coding assistant for designing scoring algorithms, building the Streamlit dashboard, 
+  integrating DOCX and PDF file parsing, and debugging Windows system Python environment pathing.
+
+# ============================================================================
+# Approach summary (optional but recommended)
+# ============================================================================
+methodology_summary: |
+  Two-stage pipeline optimized for offline, CPU-only candidate discovery and ranking. In the 
+  preprocessing stage, candidate profiles are cleaned and vectorized using a local BGE-small-en-v1.5 
+  sentence transformer. In the ranking stage, job descriptions are parsed into structured sections 
+  and embedded. Cosine similarity is computed against precalculated candidate vectors to fetch a 
+  semantic shortlist of 500. Shortlisted candidates are evaluated against the job description using 
+  a weighted scoring model: Semantic (20%), Skills (30%), Experience (25%), Title Relevance (15%), 
+  Education Fit (5%), and Platform Activity (5%). Diminishing-return penalties are stacked for profile 
+  anomalies (e.g. skill-stuffing, title-chasing) via a multiplicative consistency multiplier to 
+  filter out honeypot trap candidates. An optional localized XGBoost classifier dynamically fits 
+  on the shortlist to predict matching probabilities and blend them with heuristic scores. Finally, 
+  a deterministic template engine generates human-readable reasoning detailing specific strengths 
+  and gaps. Average ranking runtime is ~2–4 seconds for 100K candidates on CPU.
+
+# ============================================================================
+# Declarations
+# ============================================================================
+declarations:
+  read_submission_spec: true        # I have read submission_spec.md in full
+  code_is_original_work: true       # My code is my team's original work (using AI as a tool is fine)
+  no_collusion: true                # I have not coordinated my submission with other teams
+  honeypot_check_done: true         # OPTIONAL — set true if you explicitly checked for honeypots in your ranking
+  reproduction_tested: true         # I have tested that my reproduce_command runs end-to-end
