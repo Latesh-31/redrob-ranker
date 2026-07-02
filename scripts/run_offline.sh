@@ -11,4 +11,4 @@ export MODELS_DIR=${MODELS_DIR:-$ROOT_DIR/models}
 
 echo "Using MODELS_DIR=$MODELS_DIR"
 
-python rank.py --jd data/job_description.md --output output/submission.csv
+python rank.py --jd data/job_description.md --output output/submission.xlsx

@@ -1,18 +1,21 @@
-"""Validate submission CSV format and constraints."""
+"""Validate submission XLSX format and constraints."""
 
 from __future__ import annotations
 
-import csv
 import sys
 from pathlib import Path
+import pandas as pd
 
 OUTPUT_DIR = Path(__file__).parent / "output"
-SUBMISSION_FILE = OUTPUT_DIR / "submission.csv"
+SUBMISSION_FILE = OUTPUT_DIR / "submission.xlsx"
 REQUIRED_COLUMNS = ("candidate_id", "rank", "score", "reasoning")
 EXPECTED_ROWS = 100
 
 
 def validate_submission(path: Path = SUBMISSION_FILE, expected_rows: int = EXPECTED_ROWS) -> bool:
+    if path.suffix == ".csv":
+        path = path.with_suffix(".xlsx")
+
     if not path.exists():
         print(f"Error: submission file not found at {path}")
         return False
@@ -20,15 +23,15 @@ def validate_submission(path: Path = SUBMISSION_FILE, expected_rows: int = EXPEC
     errors: list[str] = []
     rows: list[dict[str, str]] = []
 
-    with open(path, encoding="utf-8", newline="") as handle:
-        reader = csv.DictReader(handle)
-        if reader.fieldnames is None:
-            errors.append("CSV has no header row")
-        else:
-            missing = [c for c in REQUIRED_COLUMNS if c not in reader.fieldnames]
-            if missing:
-                errors.append(f"Missing columns: {missing}")
-        rows = list(reader)
+    try:
+        df = pd.read_excel(path)
+        columns = list(df.columns)
+        missing = [c for c in REQUIRED_COLUMNS if c not in columns]
+        if missing:
+            errors.append(f"Missing columns: {missing}")
+        rows = df.to_dict(orient="records")
+    except Exception as e:
+        errors.append(f"Failed to read Excel file: {e}")
 
     if len(rows) != expected_rows:
         errors.append(f"Expected {expected_rows} rows, got {len(rows)}")

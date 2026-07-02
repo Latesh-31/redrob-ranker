@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import csv
 import json
+import pandas as pd
 from pathlib import Path
 
 from src.utils.constants import OUTPUT_DIR
@@ -15,22 +15,25 @@ def export_csv(
     path: Path | None = None,
     debug_path: Path | None = None,
 ) -> Path:
-    path = path or OUTPUT_DIR / "submission.csv"
-    debug_path = debug_path or OUTPUT_DIR / "top100.json"
+    if path is None:
+        path = OUTPUT_DIR / "submission.xlsx"
+    elif path.suffix == ".csv":
+        path = path.with_suffix(".xlsx")
+
+    debug_path = debug_path or OUTPUT_DIR / "submission.json"
     path.parent.mkdir(parents=True, exist_ok=True)
 
-    with open(path, "w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=["candidate_id", "rank", "score", "reasoning"])
-        writer.writeheader()
-        for row in ranked:
-            writer.writerow(
-                {
-                    "candidate_id": row.candidate_id,
-                    "rank": row.rank,
-                    "score": f"{row.score:.4f}",
-                    "reasoning": row.reasoning,
-                }
-            )
+    data = [
+        {
+            "candidate_id": row.candidate_id,
+            "rank": row.rank,
+            "score": round(row.score, 4),
+            "reasoning": row.reasoning,
+        }
+        for row in ranked
+    ]
+    df = pd.DataFrame(data)
+    df.to_excel(path, index=False)
 
     debug_payload = [
         {

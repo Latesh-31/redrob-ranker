@@ -247,7 +247,7 @@ with tab_rank:
                     jd_path=jd_path,
                     retrieval_k=retrieval_k,
                     final_k=final_k,
-                    output_path=Path("output/submission.csv"),
+                    output_path=Path("output/submission.xlsx"),
                     use_xgb_reranker=use_xgb
                 )
                 
@@ -272,12 +272,12 @@ with tab_rank:
         col_m1.metric("Candidates Ranked", f"{total_matched}")
         col_m2.metric("Average Match Score", f"{avg_score:.4f}")
         
-        with open("output/submission.csv", "rb") as file:
+        with open("output/submission.xlsx", "rb") as file:
             col_m3.download_button(
-                label="📥 Download submission.csv",
+                label="📥 Download submission.xlsx",
                 data=file,
-                file_name="submission.csv",
-                mime="text/csv",
+                file_name="submission.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 use_container_width=True
             )
             
